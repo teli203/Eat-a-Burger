@@ -1,44 +1,54 @@
-var express = require("express");
+const express = require("express");
 
-var router = express.Router();
-var burger = require("../models/burger.js");
+const router = express.Router();
 
-// get route -> index
-router.get("/", function (req, res) {
-    res.redirect("/burgers");
+// Import the model (burger.js) to use its database functions.
+const burger = require("../models/burger.js");
+
+// Creating routes //
+router.get("/", (req, res) => {
+    burger.all((data) => {
+        const viewData = {
+            burgers: data
+        };
+        console.log(viewData);
+        res.render("index", viewData);
+    });
 });
-
-router.get("/burgers", function (req, res) {
-    // express callback response by calling burger.selectAllBurger
-    burger.all(function (burgerData) {
-        // wrapper for orm.js that using MySQL query callback will return burger_data, render to index with handlebar
-        res.render("index", { burger_data: burgerData });
+// Send back the ID of the new burger //
+router.post("/api/burgers", (req, res) => {
+    burger.create(["name", "eaten"], [req.body.name, req.body.eaten], (result) => {
+        
+        res.json({ id: result.insertId });
     });
 });
 
-// post route -> back to index
-router.post("/burgers/create", function (req, res) {
-    if (!req.body.burger_name) {
-        return res.status(422).json();
-    }
-    // takes the request object using it as input for burger.addBurger
-    burger.create(req.body.burger_name, function (result) {
-        // wrapper for orm.js that using MySQL insert callback will return a log to console,
-        // render back to index with handle
-        console.log(result);
-        res.redirect("/");
+router.put("/api/burgers/:id", (req, res) => {
+
+    const condition = { id: req.params.id };
+
+    console.log("condition", condition);
+// return 404 //
+    burger.update({ eaten: req.body.eaten }, condition, (result) => {
+        if (result.changedRows == 0) {
+            
+            return res.status(404).end();
+        }
+        res.status(200).end();
     });
 });
 
-// put route -> back to index
-router.put("/burgers/:id", function (req, res) {
-    burger.update(req.params.id, function (result) {
-        // wrapper for orm.js that using MySQL update callback will return a log to console,
-        // render back to index with handle
-        console.log(result);
-        // Send back response and let page reload from .then in Ajax
-        res.sendStatus(200);
+router.delete("/api/burgers/:id", (req, res) => {
+    const condition = { id: req.params.id };
+
+    burger.delete(condition, (result) => {
+        if (result.affectedRows == 0) {
+            
+            return res.status(404).end();
+        }
+        res.status(200).end();
     });
 });
 
+// Export routes //
 module.exports = router;
