@@ -2,78 +2,109 @@
 // Here is the O.R.M. where you write functions that takes inputs and conditions
 // and turns them into database commands like SQL.
 
-var connection = require("./connection.js");
+
+// Import MySQL connection.
+
+const connection = require("../config/connection.js");
+
+// Helper //
 
 function printQuestionMarks(num) {
-  var arr = [];
+    let arr = [];
 
-  for (var i = 0; i < num; i++) {
-    arr.push("?");
-  }
+    for (let i = 0; i < num; i++) {
+        arr.push("?");
+    }
 
-  return arr.toString();
+    return arr.toString();
 }
 
-function objToSql(ob) {
-  // column1=value, column2=value2,...
-  var arr = [];
+function objToSql(obj) {
+    let arr = [];
 
-  for (var key in ob) {
-    arr.push(key + "=" + ob[key]);
-  }
+    for (let key in obj) {
+        let value = obj[key];
 
-  return arr.toString();
+        if (Object.hasOwnProperty.call(obj, key)) {
+
+            if (typeof value === "string" && value.indexOf(" ") >= 0) {
+                value = `'${value}'`;
+            }
+
+            arr.push(`${key}=${value}`);
+        }
+    }
+
+    return arr.toString();
 }
 
-var orm = {
-  all: function(tableInput, cb) {
-    var queryString = "SELECT * FROM " + tableInput + ";";
-    connection.query(queryString, function(err, result) {
-      if (err) {
-        throw err;
-      }
-      cb(result);
-    });
-  },
-  // vals is an array of values that we want to save to cols
-  // cols are the columns we want to insert the values into
-  create: function(table, cols, vals, cb) {
-    var queryString = "INSERT INTO " + table;
+// Object for all our SQL //
 
-    queryString += " (";
-    queryString += cols.toString();
-    queryString += ") ";
-    queryString += "VALUES (";
-    queryString += printQuestionMarks(vals.length);
-    queryString += ") ";
+const orm = {
+    all: (tableInput, cb) => {
+        const queryString = `
+        SELECT * FROM ${tableInput};
+        `;
+        connection.query(queryString, (err, result) => {
+            if (err) {
+                throw err;
+            }
+            cb(result);
+        });
+    },
 
-    console.log(queryString);
+    create: (table, cols, vals, cb) => {
+        const queryString = `
+        INSERT INTO ${table} (${cols.toString()})
+        VALUES (${printQuestionMarks(vals.length)})
+        `;
 
-    connection.query(queryString, vals, function(err, result) {
-      if (err) {
-        throw err;
-      }
-      cb(result);
-    });
-  },
-  // objColVals would be the columns and values that you want to update
-  // an example of objColVals would be {name: panther, sleepy: true}
-  update: function(table, objColVals, condition, cb) {
-    var queryString = "UPDATE " + table;
+        console.log(queryString);
 
-    queryString += " SET ";
-    queryString += objToSql(objColVals);
-    queryString += " WHERE ";
-    queryString += condition;
+        connection.query(queryString, vals, (err, result) => {
+            if (err) {
+                throw err;
+            }
 
-    console.log(queryString);
-    connection.query(queryString, function(err, result) {
-      if (err) {
-        throw err;
-      }
-      cb(result);
-    });
-  }
+            cb(result);
+        });
+    },
+
+    update: (table, objColVals, condition, cb) => {
+        const queryString = `
+        UPDATE ${table}
+        SET ${objToSql(objColVals)}
+        WHERE ${objToSql(condition)}
+        `;
+
+        console.log(queryString);
+
+        connection.query(queryString, (err, result) => {
+            if (err) {
+                throw err;
+            }
+
+            cb(result);
+        });
+    },
+
+    delete: (table, condition, cb) => {
+        const queryString = `
+        DELETE FROM ${table} 
+        WHERE ${objToSql(condition)}
+        `;
+
+        console.log(queryString);
+
+        connection.query(queryString, (err, result) => {
+            if (err) {
+                throw err;
+            }
+
+            cb(result);
+        });
+    }
 };
 
+// Export the orm object so our models can use it //
 module.exports = orm;
