@@ -1,9 +1,10 @@
-var orm = require("../config/orm.js");
+// Import to ORM //
+const orm = require("../config/orm.js");
 
-var burger = {
-    all: function (cb) {
-        orm.all("burgers", function (res) {
-            cb(res);
+const burger = {
+    all(cb) {
+        orm.all("burgers", (results) => {
+            cb(results);
         });
     },
     create: function (name, cb) {
