@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/teli203/eat-a-burger/issues"
   },
-  "homepage": "https://github.com/teli203/eat-da-burger#readme",
+  "homepage": "https://github.com/teli203/eat-a-burger#readme",
   "dependencies": {
     "express": "^4.17.1",
     "express-handlebars": "^5.2.0",
