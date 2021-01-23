@@ -1,7 +1,7 @@
 {
-  "name": "eat-a-burger",
+  "name": "Eat-a-Burger",
   "version": "1.0.0",
-  "description": "A web app for burgers",
+  "description": "Description: A simple web application that allows users to add burgers that the user wants to eat, mark those burgers as eaten, and to delete those burgers from the page. The application is structured using the \"MVC\" structure as follows -",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,23 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teli203/eat-a-burger.git"
+    "url": "git+https://github.com/teli203/Eat-a-Burger.git"
   },
-  "keywords": [
-    "database",
-    "orm",
-    "burgers"
-  ],
-  "author": "Telicia Watson",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/teli203/eat-a-burger/issues"
+    "url": "https://github.com/teli203/Eat-a-Burger/issues"
   },
-  "homepage": "https://github.com/teli203/eat-a-burger#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "express-handlebars": "^5.2.0",
-    "handlebars": "^4.7.6",
-    "mysql": "^8.0.12"
-  }
+  "homepage": "https://github.com/teli203/Eat-a-Burger#readme"
 }
